@@ -2,6 +2,7 @@
 using System.Data;
 using System.Windows;
 using AudioSwitcher.AudioApi.CoreAudio;
+using NAudio.Midi;
 
 namespace NanoKontrolVolume;
 
@@ -17,14 +18,14 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        midiHandler = new MidiHandler(0);
+        midiHandler = new MidiHandler();
 
         var defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
         foreach (var session in defaultPlaybackDevice.SessionController.All())
         {
             if (session.DisplayName == "Spotify")
             {
-                session.Volume = 55;
+                session.Volume = 15;
             }
         }
     }
