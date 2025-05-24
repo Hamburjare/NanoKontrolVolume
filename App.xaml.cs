@@ -2,7 +2,6 @@
 using System.Data;
 using System.Windows;
 using AudioSwitcher.AudioApi.CoreAudio;
-using NAudio.Midi;
 
 namespace NanoKontrolVolume;
 
@@ -12,13 +11,15 @@ namespace NanoKontrolVolume;
 public partial class App : Application
 {
     
-    public MidiHandler midiHandler;
+    public MidiHandler? midiHandler;
+    public VolumeHandler? volumeHandler;
 
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
         midiHandler = new MidiHandler();
+        volumeHandler = new VolumeHandler();
 
         var defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
         foreach (var session in defaultPlaybackDevice.SessionController.All())

@@ -58,7 +58,8 @@ public class MidiHandler
         Group8Mute = Group7Mute + 1,
         Group8Record = Group7Record + 1,
     }
-    public MidiIn midiIn;
+    private MidiIn midiIn;
+    private MidiOut? midiOut;
     public MidiHandler()
     {
         int deviceIndex = 0;
@@ -77,6 +78,28 @@ public class MidiHandler
         );
         midiIn.MessageReceived += OnMidiMessageReceived;
         midiIn.Start();
+    }
+
+    public void StartMidiOut()
+    {
+        int deviceIndex = 0;
+
+        for (int i = 0; i <= MidiOut.NumberOfDevices; i++)
+        {
+            if (MidiOut.DeviceInfo(i).ProductName == "nanoKONTROL2")
+            {
+                deviceIndex = i;
+                break;
+            }
+        }
+
+        midiOut = new MidiOut(deviceIndex);
+    }
+
+    public void StopMidiOut()
+    {
+        midiOut?.Dispose();
+        midiOut = null;
     }
 
     private void OnMidiMessageReceived(object? sender, MidiInMessageEventArgs e)
