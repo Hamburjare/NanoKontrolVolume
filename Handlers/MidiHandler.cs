@@ -105,6 +105,20 @@ public class MidiHandler
         midiOut = null;
     }
 
+    public void OnLEDStatusChanged(object? sender, LedChangedEvent e)
+    {
+        StartMidiOut();
+
+        int value = e.IsOn ? 127 : 0;
+        midiOut?.Send(MidiMessage.ChangeControl(
+            (int)e.Led,
+            value,
+            1
+        ).RawData);
+
+        StopMidiOut();
+    }
+
     private void OnMidiMessageReceived(object? sender, MidiInMessageEventArgs e)
     {
 

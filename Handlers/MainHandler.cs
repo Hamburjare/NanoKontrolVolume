@@ -11,5 +11,8 @@ public class MainHandler
         midiHandler.SliderChanged += volumeHandler.OnSliderChanged;
         midiHandler.DialChanged += volumeHandler.OnDialChanged;
         midiHandler.ButtonPress += buttonHandler.OnButtonPress;
+        buttonHandler.LedStatusChanged += midiHandler.OnLEDStatusChanged;
+        buttonHandler.ChangeApplicationOnSlider += volumeHandler.OnChangeApplicationOnSlider;
+        volumeHandler.LedStatusChanged += midiHandler.OnLEDStatusChanged;
     }
 }
