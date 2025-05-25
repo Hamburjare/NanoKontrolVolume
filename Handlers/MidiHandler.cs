@@ -4,7 +4,10 @@ namespace NanoKontrolVolume;
 
 public class MidiHandler
 {
-    enum ControlID : int
+    public event EventHandler<DialChangedEvent>? DialChanged;
+    public event EventHandler<SliderChangedEvent>? SliderChanged;
+    public event EventHandler<ButtonPressEvent>? ButtonPress;
+    public enum ControlID : int
     {
         TrackPrevious = 0x3A,
         TrackNext = 0x3B,
@@ -108,8 +111,48 @@ public class MidiHandler
         var data = e.MidiEvent as ControlChangeEvent;
         if (data != null)
         {
-            Console.WriteLine($"CC#{(ControlID)data.Controller} = {data.ControllerValue} = {data.ControllerValue * 100 / 127}%");
+            int controller = (int)data.Controller;
+            int? dialGroup = GetDialGroup(controller);
+            int? sliderGroup = GetSliderGroup(controller);
+
+            if (dialGroup.HasValue)
+            {
+                DialChanged?.Invoke(this, new DialChangedEvent(dialGroup.Value, data.ControllerValue * 100 / 127));
+            }
+            else if (sliderGroup.HasValue)
+            {
+                SliderChanged?.Invoke(this, new SliderChangedEvent(sliderGroup.Value, data.ControllerValue * 100 / 127));
+            }
+            else
+            {
+                int buttonGroup = GetButtonGroup(controller);
+                ButtonPress?.Invoke(this, new ButtonPressEvent((ControlID)data.Controller, data.ControllerValue > 0, buttonGroup));
+            }
         }
 
+    }
+
+    private int? GetDialGroup(int controller)
+    {
+        if (controller >= (int)ControlID.Group1Dial && controller <= (int)ControlID.Group8Dial)
+            return controller - (int)ControlID.Group1Dial + 1;
+        return null;
+    }
+
+    private int? GetSliderGroup(int controller)
+    {
+        if (controller >= (int)ControlID.Group1Slider && controller <= (int)ControlID.Group8Slider)
+            return controller - (int)ControlID.Group1Slider + 1;
+        return null;
+    }
+    private int GetButtonGroup(int controller)
+    {
+        if (controller >= (int)ControlID.Group1Solo && controller <= (int)ControlID.Group8Solo)
+            return controller - (int)ControlID.Group1Solo + 1;
+        else if (controller >= (int)ControlID.Group1Mute && controller <= (int)ControlID.Group8Mute)
+            return controller - (int)ControlID.Group1Mute + 1;
+        else if (controller >= (int)ControlID.Group1Record && controller <= (int)ControlID.Group8Record)
+            return controller - (int)ControlID.Group1Record + 1;
+        return 0;
     }
 }

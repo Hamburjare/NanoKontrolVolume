@@ -1,5 +1,7 @@
 
 using System.IO;
+using System.Windows.Forms;
+using AudioSwitcher.AudioApi.CoreAudio;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -7,6 +9,8 @@ namespace NanoKontrolVolume;
 
 public class VolumeHandler
 {
+    private readonly CoreAudioController audioController = new CoreAudioController();
+
     Dictionary<int, string> sliderMappings = new Dictionary<int, string>();
     Dictionary<int, string> dialMappings = new Dictionary<int, string>();
 
@@ -45,5 +49,45 @@ public class VolumeHandler
         }
     }
 
+
+    public void OnSliderChanged(object? sender, SliderChangedEvent e)
+    {
+        Task.Run(() =>
+        {
+            if (!sliderMappings.TryGetValue(e.Group, out string? app))
+            {
+                return;
+            }
+            var defaultPlaybackDevice = audioController.DefaultPlaybackDevice;
+            foreach (var session in defaultPlaybackDevice.SessionController.All())
+            {
+                if (session.DisplayName == app)
+                {
+                    Console.WriteLine($"Setting volume for {session.DisplayName} to {e.Value}%");
+                    session.Volume = e.Value;
+                }
+            }
+        });
+    }
+
+    public void OnDialChanged(object? sender, DialChangedEvent e)
+    {
+        Task.Run(() =>
+        {
+            if (!dialMappings.TryGetValue(e.Group, out string? app))
+            {
+                return;
+            }
+            var defaultPlaybackDevice = audioController.DefaultPlaybackDevice;
+            foreach (var session in defaultPlaybackDevice.SessionController.All())
+            {
+                if (session.DisplayName == app)
+                {
+                    Console.WriteLine($"Setting volume for {session.DisplayName} to {e.Value}%");
+                    session.Volume = e.Value;
+                }
+            }
+        });
+    }
 
 }
