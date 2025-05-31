@@ -19,6 +19,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        mainHandler.Shutdown();
         base.OnExit(e);
     }
 

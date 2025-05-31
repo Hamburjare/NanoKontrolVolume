@@ -19,7 +19,7 @@ public class AudioSessionObserver : IObserver<IAudioSession>
 
     public void OnNext(IAudioSession value)
     {
-        _onSessionCreated?.Invoke(value.ExecutablePath);
+        _onSessionCreated?.Invoke(value.Id);
     }
 }
 

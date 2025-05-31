@@ -13,6 +13,21 @@ public class MainHandler
         midiHandler.ButtonPress += buttonHandler.OnButtonPress;
         buttonHandler.LedStatusChanged += midiHandler.OnLEDStatusChanged;
         buttonHandler.ChangeApplicationOnSlider += volumeHandler.OnChangeApplicationOnSlider;
+        buttonHandler.MuteApplicationOnSlider += volumeHandler.OnMuteApplicationOnSlider;
         volumeHandler.LedStatusChanged += midiHandler.OnLEDStatusChanged;
+
+        TurnOnLedsAsync();
+    }
+
+    public void Shutdown()
+    {
+        volumeHandler.Shutdown();
+        midiHandler.Shutdown();
+    }
+
+    private async void TurnOnLedsAsync()
+    {
+        await Task.Delay(2000);
+        volumeHandler.GoThroughAllSliderMappings();
     }
 }

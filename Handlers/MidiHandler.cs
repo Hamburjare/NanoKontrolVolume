@@ -119,6 +119,32 @@ public class MidiHandler
         StopMidiOut();
     }
 
+    public void TurnOffAllLeds()
+    {
+        StartMidiOut();
+
+        foreach (ControlID led in Enum.GetValues(typeof(ControlID)))
+        {
+
+            midiOut?.Send(MidiMessage.ChangeControl(
+                (int)led,
+                0,
+                1
+            ).RawData);
+
+        }
+
+        StopMidiOut();
+    }
+
+    public void Shutdown()
+    {
+        midiIn.Stop();
+        midiIn.Dispose();
+        StopMidiOut();
+        TurnOffAllLeds();
+    }
+
     private void OnMidiMessageReceived(object? sender, MidiInMessageEventArgs e)
     {
 
