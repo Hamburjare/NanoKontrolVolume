@@ -8,6 +8,13 @@ public class MainHandler
 
     public MainHandler()
     {
+
+
+        // TurnOnLedsAsync();
+    }
+
+    public void Start()
+    {
         midiHandler.SliderChanged += volumeHandler.OnSliderChanged;
         midiHandler.DialChanged += volumeHandler.OnDialChanged;
         midiHandler.ButtonPress += buttonHandler.OnButtonPress;
@@ -16,7 +23,8 @@ public class MainHandler
         buttonHandler.MuteApplicationOnSlider += volumeHandler.OnMuteApplicationOnSlider;
         volumeHandler.LedStatusChanged += midiHandler.OnLEDStatusChanged;
 
-        TurnOnLedsAsync();
+        volumeHandler.GoThroughAllSliderMappings();
+
     }
 
     public void Shutdown()

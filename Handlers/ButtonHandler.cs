@@ -7,17 +7,15 @@ public class ButtonHandler
     public event EventHandler<MuteApplicationEvent>? MuteApplicationOnSlider;
     public void OnButtonPress(object? sender, ButtonPressEvent e)
     {
-        Task.Run(() =>
+
+        if (IsSoloButton(e.Button) && e.IsPressed)
         {
-            if (IsSoloButton(e.Button) && e.IsPressed)
-            {
-                ChangeApplicationOnSlider?.Invoke(this, new ChangeApplicationEvent(e.Button, e.Group));
-            }
-            else if (IsMuteButton(e.Button) && e.IsPressed)
-            {
-                MuteApplicationOnSlider?.Invoke(this, new MuteApplicationEvent(e.Button, e.Group));
-            }
-        });
+            ChangeApplicationOnSlider?.Invoke(this, new ChangeApplicationEvent(e.Button, e.Group));
+        }
+        else if (IsMuteButton(e.Button) && e.IsPressed)
+        {
+            MuteApplicationOnSlider?.Invoke(this, new MuteApplicationEvent(e.Button, e.Group));
+        }
     }
 
     public bool IsSoloButton(MidiHandler.ControlID button)

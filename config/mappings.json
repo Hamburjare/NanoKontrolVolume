@@ -1,35 +1,34 @@
 {
-    "Group1": {
-        "Dial": "",
-        "Slider": "Spotify"
-    },
-    "Group2": {
-        "Dial": "",
-        "Slider": ""
-    },
-    "Group3": {
-        "Dial": "",
-        "Slider": ""
-    },
-    "Group4": {
-        "Dial": "",
-        "Slider": ""
-    },
-    "Group5": {
-        "Dial": "",
-        "Slider": ""
-    },
-    "Group6": {
-        "Dial": "",
-        "Slider": ""
-    },
-    "Group7": {
-        "Dial": "",
-        "Slider": ""
-    },
-    "Group8": {
-        "Dial": "",
-        "Slider": ""
-    }
-
+  "Group1": {
+    "Dial": "",
+    "Slider": "{0.0.0.00000000}.{0d9bb1c1-69a7-4270-80fa-4440df64482f}|\\Device\\HarddiskVolume3\\Program Files\\WindowsApps\\SpotifyAB.SpotifyMusic_1.264.408.0_x64__zpdnekdrzrea0\\Spotify.exe%b{00000000-0000-0000-0000-000000000000}"
+  },
+  "Group2": {
+    "Dial": "",
+    "Slider": "{0.0.0.00000000}.{0d9bb1c1-69a7-4270-80fa-4440df64482f}|\\Device\\HarddiskVolume3\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe%b{00000000-0000-0000-0000-000000000000}"
+  },
+  "Group3": {
+    "Dial": "",
+    "Slider": ""
+  },
+  "Group4": {
+    "Dial": "",
+    "Slider": ""
+  },
+  "Group5": {
+    "Dial": "",
+    "Slider": ""
+  },
+  "Group6": {
+    "Dial": "",
+    "Slider": ""
+  },
+  "Group7": {
+    "Dial": "",
+    "Slider": "Default Output Device"
+  },
+  "Group8": {
+    "Dial": "",
+    "Slider": "{0.0.0.00000000}.{0d9bb1c1-69a7-4270-80fa-4440df64482f}|#%b{A9EF3FD9-4240-455E-A4D5-F2B3301887B2}"
+  }
 }

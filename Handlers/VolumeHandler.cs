@@ -112,88 +112,77 @@ public class VolumeHandler
 
     public void OnSliderChanged(object? sender, SliderChangedEvent e)
     {
-        Task.Run(() =>
+        if (!sliderMappings.TryGetValue(e.Group, out string? appId))
         {
-            if (!sliderMappings.TryGetValue(e.Group, out string? appId))
-            {
-                return;
-            }
+            return;
+        }
 
-            if (appId.Equals("Default Output Device", StringComparison.OrdinalIgnoreCase))
-            {
-                defaultPlaybackDevice.Volume = e.Value;
-                ShowVolumeOSD();
-                return;
-            }
+        if (appId.Equals("Default Output Device", StringComparison.OrdinalIgnoreCase))
+        {
+            defaultPlaybackDevice.Volume = e.Value;
+            ShowVolumeOSD();
+            return;
+        }
 
-            foreach (var session in defaultPlaybackDevice.SessionController.All())
+        foreach (var session in defaultPlaybackDevice.SessionController.All())
+        {
+            if (session.Id.Equals(appId, StringComparison.OrdinalIgnoreCase))
             {
-                if (session.Id.Equals(appId, StringComparison.OrdinalIgnoreCase))
-                {
-                    session.Volume = e.Value;
-                }
+                session.Volume = e.Value;
             }
-        });
+        }
     }
 
     public void OnDialChanged(object? sender, DialChangedEvent e)
     {
-        Task.Run(() =>
+        if (!dialMappings.TryGetValue(e.Group, out string? appId))
         {
-            if (!dialMappings.TryGetValue(e.Group, out string? appId))
-            {
-                return;
-            }
+            return;
+        }
 
-            foreach (var session in defaultPlaybackDevice.SessionController.All())
+        foreach (var session in defaultPlaybackDevice.SessionController.All())
+        {
+            if (session.Id.Equals(appId, StringComparison.OrdinalIgnoreCase))
             {
-                if (session.Id.Equals(appId, StringComparison.OrdinalIgnoreCase))
-                {
-                    session.Volume = e.Value;
-                }
+                session.Volume = e.Value;
             }
-        });
+        }
     }
 
     public void OnChangeApplicationOnSlider(object? sender, ChangeApplicationEvent e)
     {
-        Task.Run(() =>
+        if (sliderMappings.TryGetValue(e.Group, out string? app))
         {
-            if (sliderMappings.TryGetValue(e.Group, out string? app))
+            sliderMappings.Remove(e.Group);
+            LedStatusChanged?.Invoke(this, new LedChangedEvent(e.Button, false));
+            LedStatusChanged?.Invoke(this, new LedChangedEvent((MidiHandler.ControlID)Enum.Parse(typeof(MidiHandler.ControlID), $"Group{e.Group}Record"), false));
+        }
+        else
+        {
+            app = GetForegroundProcessName();
+            if (app != null)
             {
-                sliderMappings.Remove(e.Group);
-                LedStatusChanged?.Invoke(this, new LedChangedEvent(e.Button, false));
+                sliderMappings.Add(e.Group, app);
+                LedStatusChanged?.Invoke(this, new LedChangedEvent(e.Button, true));
+                GoThroughActiveSessions(e.Group, app);
             }
-            else
-            {
-                app = GetForegroundProcessName();
-                if (app != null)
-                {
-                    sliderMappings.Add(e.Group, app);
-                    LedStatusChanged?.Invoke(this, new LedChangedEvent(e.Button, true));
-                }
-            }
-            SaveMappings();
-        });
+        }
+        SaveMappings();
     }
 
     public void OnMuteApplicationOnSlider(object? sender, MuteApplicationEvent e)
     {
-        Task.Run(() =>
+        if (sliderMappings.TryGetValue(e.Group, out string? appId))
         {
-            if (sliderMappings.TryGetValue(e.Group, out string? appId))
+            foreach (var session in defaultPlaybackDevice.SessionController.All())
             {
-                foreach (var session in defaultPlaybackDevice.SessionController.All())
+                if (session.Id.Equals(appId, StringComparison.OrdinalIgnoreCase))
                 {
-                    if (session.Id.Equals(appId, StringComparison.OrdinalIgnoreCase))
-                    {
-                        session.IsMuted = !session.IsMuted;
-                        LedStatusChanged?.Invoke(this, new LedChangedEvent(e.Button, session.IsMuted));
-                    }
+                    session.IsMuted = !session.IsMuted;
+                    LedStatusChanged?.Invoke(this, new LedChangedEvent(e.Button, session.IsMuted));
                 }
             }
-
-        });
+        }
     }
 
 
@@ -246,7 +235,7 @@ public class VolumeHandler
                 break;
             }
             // Check if the session's ExecutablePath or DisplayName matches the process ID
-            else if ((session.ExecutablePath != null && session.ExecutablePath.Contains(processId, StringComparison.OrdinalIgnoreCase)) || (session.DisplayName != null && session.DisplayName.Equals(processId, StringComparison.OrdinalIgnoreCase)))
+            else if ((session.ExecutablePath != null && session.ExecutablePath.Contains(processId, StringComparison.OrdinalIgnoreCase)) || (session.DisplayName != null && session.DisplayName.Contains(processId, StringComparison.OrdinalIgnoreCase)))
             {
                 // If it matches, update the sliderMappings dictionary to include the session ID
                 sliderMappings[group] = session.Id;
