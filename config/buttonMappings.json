@@ -1,0 +1,13 @@
+{
+    "TrackPrevious": "",
+    "TrackNext": "",
+    "Cycle": "",
+    "MarkerSet": "",
+    "MarkerPrevious": "",
+    "MarkerNext": "",
+    "Rewind": "Media: Previous",
+    "FastForward": "Media: Next",
+    "Stop": "Send Key Combination: Alt+LShift+F15",
+    "Play": "Media: Play/Pause",
+    "Record": ""
+}

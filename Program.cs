@@ -18,11 +18,6 @@ AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
     Log.Fatal(e.ExceptionObject as Exception, "Unhandled exception occurred");
 };
 
-TaskScheduler.UnobservedTaskException += (sender, e) =>
-{
-    Log.Fatal(e.Exception, "Unobserved task exception occurred");
-};
-
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddHostedService<Worker>();

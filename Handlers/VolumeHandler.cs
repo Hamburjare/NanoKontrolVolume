@@ -1,6 +1,5 @@
 
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using AudioSwitcher.AudioApi.CoreAudio;
 using Newtonsoft.Json.Linq;
@@ -24,6 +23,8 @@ public class VolumeHandler
     private const byte VK_VOLUME_DOWN = 0xAE;
     private const uint KEYEVENTF_KEYUP = 0x0002;
 
+    private int prevDefaultPlaybackVolume = 0;
+
     private readonly CoreAudioController audioController = new CoreAudioController();
     private readonly CoreAudioDevice defaultPlaybackDevice;
 
@@ -46,6 +47,7 @@ public class VolumeHandler
     public void Shutdown()
     {
         SaveMappings();
+        TurnOffLeds();
     }
 
     private void OnSessionDisconnected(string sessionId)
@@ -62,7 +64,7 @@ public class VolumeHandler
     {
         try
         {
-            string json = File.ReadAllText(@"config/mappings.json");
+            string json = File.ReadAllText(@"config/groupMappings.json");
             var jObj = JObject.Parse(json);
             foreach (var group in jObj)
             {
@@ -101,7 +103,7 @@ public class VolumeHandler
                     ["Slider"] = sliderMappings.TryGetValue(i, out string? sliderValue) ? sliderValue : ""
                 };
             }
-            File.WriteAllText(@"config/mappings.json", jObj.ToString());
+            File.WriteAllText(@"config/groupMappings.json", jObj.ToString());
         }
         catch (Exception ex)
         {
@@ -120,7 +122,11 @@ public class VolumeHandler
         if (appId.Equals("Default Output Device", StringComparison.OrdinalIgnoreCase))
         {
             defaultPlaybackDevice.Volume = e.Value;
-            ShowVolumeOSD();
+            if (defaultPlaybackDevice.Volume != prevDefaultPlaybackVolume)
+            {
+                ShowVolumeOSD();
+            }
+            prevDefaultPlaybackVolume = (int)defaultPlaybackDevice.Volume;
             return;
         }
 
@@ -251,6 +257,7 @@ public class VolumeHandler
 
     public void GoThroughAllSliderMappings()
     {
+        TurnOffLeds();
         foreach (var group in sliderMappings)
         {
             // Turn on the Solo LED for the group
@@ -258,6 +265,16 @@ public class VolumeHandler
 
             // Check if the process is active and turn on the Record LED
             GoThroughActiveSessions(group.Key, group.Value);
+        }
+    }
+
+    public void TurnOffLeds()
+    {
+        foreach (var group in sliderMappings)
+        {
+            LedStatusChanged?.Invoke(this, new LedChangedEvent((MidiHandler.ControlID)Enum.Parse(typeof(MidiHandler.ControlID), $"Group{group.Key}Solo"), false));
+
+            LedStatusChanged?.Invoke(this, new LedChangedEvent((MidiHandler.ControlID)Enum.Parse(typeof(MidiHandler.ControlID), $"Group{group.Key}Record"), false));
         }
     }
 
