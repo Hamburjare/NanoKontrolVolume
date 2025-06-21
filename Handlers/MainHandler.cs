@@ -6,12 +6,7 @@ public class MainHandler
     public VolumeHandler volumeHandler = new();
     public ButtonHandler buttonHandler = new();
 
-    public MainHandler()
-    {
-
-
-        // TurnOnLedsAsync();
-    }
+    public MainHandler() { }
 
     public void Start()
     {
