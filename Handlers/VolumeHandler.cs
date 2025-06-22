@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using AudioSwitcher.AudioApi.CoreAudio;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace NanoKontrolVolume;
 
@@ -86,7 +87,7 @@ public class VolumeHandler
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading mappings: {ex.Message}");
+            Log.Error($"Error loading mappings: {ex.Message}");
         }
     }
 
@@ -107,7 +108,7 @@ public class VolumeHandler
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error saving mappings: {ex.Message}");
+            Log.Error($"Error saving mappings: {ex.Message}");
         }
     }
 
@@ -203,7 +204,7 @@ public class VolumeHandler
         var sessions = defaultPlaybackDevice.SessionController.All();
         foreach (var session in sessions)
         {
-            if (session.ProcessId == proc.Id)
+            if (session.ExecutablePath == proc.MainModule?.FileName)
             {
                 return session.Id;
             }
